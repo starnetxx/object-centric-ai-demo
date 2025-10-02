@@ -48,7 +48,7 @@
                 const base64String = reader.result.split(',')[1]; // Get base64 data after the comma
 
                 // Send Base64 string to the FastAPI endpoint
-                const endpointUrl = 'http://0.0.0.0:8000/predict'; // **IMPORTANT: Replace with your actual Colab tunnel or ngrok URL when running**
+                const endpointUrl = 'http://localhost:8000/predict'; // FastAPI server endpoint
 
                 try {
                     const response = await fetch(endpointUrl, {
