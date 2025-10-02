@@ -317,11 +317,16 @@
         
         <div class="demo-section">
             <div class="upload-area">
-
         <input type="file" id="imageUpload" accept="image/*">
                 <br>
                 <button onclick="predict()">Analyze Image</button>
             </div>
+        </div>
+
+        <div id="results" style="display: none;">
+            <h2 class="results-title">Analysis Results</h2>
+            <p id="status" class="status-message"></p>
+            <div id="matchedKernels"></div>
         </div>
         
         <div class="comparison-section">
@@ -344,12 +349,6 @@
                 </ul>
             </div>
         </div>
-
-        <div id="results" style="display: none;">
-            <h2 class="results-title">Analysis Results</h2>
-            <p id="status" class="status-message"></p>
-            <div id="matchedKernels"></div>
-        </div>
     </div>
 
     <script>
@@ -363,6 +362,9 @@
             resultsDiv.style.display = 'block';
             statusDiv.innerText = 'Analyzing image...';
             matchedKernelsDiv.innerHTML = ''; // Clear previous results
+            
+            // Smooth scroll to results
+            resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
             const file = fileInput.files[0];
             if (!file) {
