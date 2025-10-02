@@ -1,28 +1,231 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Object-Centric AI Demo</title>
+    <title>AI's Architectural Paradigm Shift</title>
+    <script src="config.js"></script>
     <style>
-        body { font-family: sans-serif; line-height: 1.6; margin: 20px; }
-        .container { max-width: 800px; margin: auto; }
-        input[type="file"] { margin-bottom: 10px; }
-        button { padding: 10px 15px; background-color: #4CAF50; color: white; border: none; cursor: pointer; }
-        button:hover { opacity: 0.8; }
-        #results { margin-top: 20px; border-top: 1px solid #eee; padding-top: 20px; }
-        .kernel-match { margin-bottom: 10px; padding: 10px; border: 1px solid #ddd; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .container { 
+            max-width: 1000px; 
+            margin: 0 auto; 
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        .main-title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .subtitle {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #34495e;
+            margin-bottom: 30px;
+        }
+        
+        .demo-section {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        
+        .upload-area {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        input[type="file"] { 
+            margin-bottom: 15px;
+            padding: 10px;
+            border: 2px dashed #667eea;
+            border-radius: 10px;
+            background: #f8f9ff;
+            width: 100%;
+            max-width: 400px;
+        }
+        
+        button { 
+            padding: 15px 30px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        button:hover { 
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+        }
+        
+        .comparison-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .comparison-card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        
+        .card-title {
+            font-size: 1.4rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+        
+        .llm-issues {
+            color: #e74c3c;
+        }
+        
+        .our-approach {
+            color: #27ae60;
+        }
+        
+        .comparison-card ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .comparison-card li {
+            margin-bottom: 10px;
+            padding-left: 20px;
+            position: relative;
+        }
+        
+        .llm-issues li:before {
+            content: "❌";
+            position: absolute;
+            left: 0;
+        }
+        
+        .our-approach li:before {
+            content: "✅";
+            position: absolute;
+            left: 0;
+        }
+        
+        #results { 
+            background: rgba(255, 255, 255, 0.95);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+        
+        .results-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .kernel-match { 
+            margin-bottom: 15px;
+            padding: 20px;
+            background: linear-gradient(45deg, #f8f9ff, #e8f4fd);
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .status-message {
+            text-align: center;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+        }
+        
+        @media (max-width: 768px) {
+            .comparison-section {
+                grid-template-columns: 1fr;
+            }
+            
+            .main-title {
+                font-size: 2rem;
+            }
+            
+            .subtitle {
+                font-size: 1.1rem;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Object-Centric AI Demo</h1>
-        <p>Upload an image to get object-centric insights from the model.</p>
+        <div class="header">
+            <h1 class="main-title">AI's Architectural Paradigm Shift</h1>
+            <p class="subtitle">from statistical pattern matching to structured world modelling</p>
+        </div>
+        
+        <div class="demo-section">
+            <div class="upload-area">
 
-        <input type="file" id="imageUpload" accept="image/*">
-        <button onclick="predict()">Predict</button>
+                <input type="file" id="imageUpload" accept="image/*">
+                <br>
+                <button onclick="predict()">Analyze Image</button>
+            </div>
+        </div>
+        
+        <div class="comparison-section">
+            <div class="comparison-card">
+                <h3 class="card-title llm-issues">LLMs have difficulty in...</h3>
+                <ul>
+                    <li>tracking objects over time</li>
+                    <li>understanding complex scenes</li>
+                    <li>grounding actions</li>
+                </ul>
+            </div>
+            
+            <div class="comparison-card">
+                <h3 class="card-title our-approach">What is possible with our approach...</h3>
+                <ul>
+                    <li>an AI assistant that remembers your stuff across rooms, days and conversations</li>
+                    <li>hyper-personalized recommendations. For an ecommerce platform for example, AI will understand not just a "fashionable outfit," but the specific shirt, pants and shoes, and how they work together</li>
+                    <li>content creation tools with pinpoint accuracy. Think Figma that remembers your components by name and history</li>
+                    <li>AR that enables persistent object anchors for enterprise manuals</li>
+                </ul>
+            </div>
+        </div>
 
-        <div id="results">
-            <h2>Results</h2>
-            <p id="status"></p>
+        <div id="results" style="display: none;">
+            <h2 class="results-title">Analysis Results</h2>
+            <p id="status" class="status-message"></p>
             <div id="matchedKernels"></div>
         </div>
     </div>
@@ -32,8 +235,11 @@
             const fileInput = document.getElementById('imageUpload');
             const statusDiv = document.getElementById('status');
             const matchedKernelsDiv = document.getElementById('matchedKernels');
+            const resultsDiv = document.getElementById('results');
 
-            statusDiv.innerText = 'Loading...';
+            // Show results section and update status
+            resultsDiv.style.display = 'block';
+            statusDiv.innerText = 'Analyzing image...';
             matchedKernelsDiv.innerHTML = ''; // Clear previous results
 
             const file = fileInput.files[0];
@@ -48,7 +254,7 @@
                 const base64String = reader.result.split(',')[1]; // Get base64 data after the comma
 
                 // Send Base64 string to the FastAPI endpoint
-                const endpointUrl = 'http://localhost:8000/predict'; // FastAPI server endpoint
+                const endpointUrl = window.API_CONFIG.apiUrl + '/predict'; // FastAPI server endpoint
 
                 try {
                     const response = await fetch(endpointUrl, {
@@ -65,20 +271,20 @@
 
                     const data = await response.json();
 
-                    statusDiv.innerText = `Prediction successful! Total kernels in pool: ${data.num_kernels}`;
+                    statusDiv.innerHTML = `<strong>Analysis Complete!</strong> Total kernels in pool: ${data.num_kernels}`;
 
                     if (data.matched_kernel_ids && data.matched_kernel_ids.length > 0) {
-                        let resultsHtml = '<h3>Matched Kernels:</h3>';
+                        let resultsHtml = '<h3 style="color: #2c3e50; margin-bottom: 20px;">Object Recognition Results:</h3>';
                         for (let i = 0; i < data.matched_kernel_ids.length; i++) {
                             resultsHtml += `<div class="kernel-match">`;
-                            resultsHtml += `<p><strong>Kernel ID:</strong> ${data.matched_kernel_ids[i]}</p>`;
-                            resultsHtml += `<p><strong>Similarity Score:</strong> ${data.matched_scores[i].toFixed(4)}</p>`;
-                            // You could add more kernel properties here if your API returned them
+                            resultsHtml += `<p><strong>Kernel ID:</strong> <code style="background: #f1f2f6; padding: 2px 6px; border-radius: 4px;">${data.matched_kernel_ids[i]}</code></p>`;
+                            resultsHtml += `<p><strong>Similarity Score:</strong> <span style="color: #27ae60; font-weight: bold;">${data.matched_scores[i].toFixed(4)}</span></p>`;
+                            resultsHtml += `<p style="margin-top: 10px; color: #7f8c8d; font-style: italic;">This represents a persistent object representation that can be tracked across time and contexts.</p>`;
                             resultsHtml += `</div>`;
                         }
                         matchedKernelsDiv.innerHTML = resultsHtml;
                     } else {
-                        matchedKernelsDiv.innerHTML = '<p>No significant kernel matches found.</p>';
+                        matchedKernelsDiv.innerHTML = '<p style="text-align: center; color: #7f8c8d;">No significant kernel matches found.</p>';
                     }
 
 
