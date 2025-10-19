@@ -1,8 +1,8 @@
 #!/bin/bash
 echo "Starting CORE Object-Centric AI Server..."
 echo "Python version:"
-python3 --version
+python --version
 echo "Installing dependencies..."
-pip3 install -r requirements.txt
+pip install -r requirements.txt
 echo "Starting server..."
-python3 enhanced_server.py
+python enhanced_server.py
