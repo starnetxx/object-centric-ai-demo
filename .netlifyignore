@@ -1,0 +1,42 @@
+# Ignore all backend and Python files
+requirements-backend.txt
+backend-server/
+enhanced_server.py
+simple_ai_server.py
+start_server.py
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+pip-log.txt
+pip-delete-this-directory.txt
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.log
+.git
+.mypy_cache
+.pytest_cache
+.hypothesis
+
+# Ignore test files
+test_*.html
+*.md
+README.md
+
+# Ignore development files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Ignore the old frontend folder (we're using public now)
+frontend/

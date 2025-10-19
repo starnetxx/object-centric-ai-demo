@@ -1,0 +1,1533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-RSFN4VKE4W"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-RSFN4VKE4W');
+</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CORE - Persistent, Compositional, Object Memory for Vision & Embodied AI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #2f2f2f 0%, #000000 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.95;
+        }
+
+        .status-bar {
+            background: white;
+            border-radius: 15px;
+            padding: 15px 25px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            animation: slideDown 0.6s ease-out;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #ccc;
+            animation: pulse 2s infinite;
+        }
+
+        .status-dot.connected {
+            background: #4ade80;
+        }
+
+        .status-dot.error {
+            background: #f87171;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            background: rgba(255,255,255,0.9);
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .tab:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        }
+
+        .tab.active {
+            background: white;
+            color: #764ba2;
+            font-weight: 600;
+        }
+
+        .panel {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+            display: none;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .panel.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .upload-area {
+            border: 3px dashed #e5e7eb;
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            background: #f9fafb;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .upload-area:hover {
+            border-color: #764ba2;
+            background: #faf5ff;
+        }
+
+        .upload-area.dragover {
+            border-color: #667eea;
+            background: #ede9fe;
+            transform: scale(1.02);
+        }
+
+        .upload-icon {
+            font-size: 3em;
+            color: #9ca3af;
+            margin-bottom: 10px;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .image-preview {
+            margin: 20px 0;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .preview-item {
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .preview-item img {
+            width: 200px;
+            height: 200px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .remove-image {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(239, 68, 68, 0.9);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            cursor: pointer;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .input-group input[type="text"],
+        .input-group textarea,
+        .input-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s ease;
+        }
+
+        .input-group input:focus,
+        .input-group textarea:focus,
+        .input-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .button:active {
+            transform: translateY(0);
+        }
+
+        .button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .button.secondary {
+            background: #6b7280;
+        }
+
+        .results {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 2px solid #e5e7eb;
+        }
+
+        .result-card {
+            background: #f9fafb;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+            animation: slideIn 0.4s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .result-title {
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .kernel-match {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .similarity-bar {
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .similarity-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 4px;
+            transition: width 0.6s ease-out;
+        }
+
+        .properties-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .property-item {
+            background: #f3f4f6;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.9em;
+        }
+
+        .property-label {
+            font-weight: 500;
+            color: #6b7280;
+        }
+
+        .chart-container {
+            margin: 20px 0;
+            padding: 20px;
+            background: #f9fafb;
+            border-radius: 10px;
+            min-height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 2em;
+            font-weight: 700;
+            color: #764ba2;
+        }
+
+        .metric-label {
+            color: #6b7280;
+            margin-top: 5px;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid #e5e7eb;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            background: #fef2f2;
+            color: #991b1b;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            border-left: 4px solid #ef4444;
+        }
+
+        .success-message {
+            background: #f0fdf4;
+            color: #166534;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            border-left: 4px solid #22c55e;
+        }
+
+        .session-info {
+            background: #fef3c7;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #f59e0b;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .tab {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
+
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0;">
+  		<img src="CORE 01.png" alt="CORE Logo" width="100" height="60" /> Cognitive Objects Representation Engine
+	    </h1>
+		<p style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin-top: 8px;">
+  		The object memory middleware for AI that remembers objects across interactions, enabling long-horizon reasoning in robotics and spatial computing!
+</p>
+             
+
+     </div>
+     <div class="status-bar"> 
+    <ul style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; list-style: none; padding-left: 0;">
+        <li style="font-weight: bold; margin-bottom: 0.8em;">
+            Your frozen vision model (CLIP, Llava, SigLIP) sees the world, but forgets it instantly.
+CORE gives it memory that lasts.
+        </li>
+        <li style="padding-left: 1.5em; position: relative; margin-bottom: 0.6em;">
+            <span style="position: absolute; left: 0; color: #4CAF50;">✓</span>
+            Persistent Object Identity - Assigns unique, updatable IDs to every object, so your robot knows it's the same cup, even after 100 steps or a reboot.
+
+        </li>
+        <li style="padding-left: 1.5em; position: relative; margin-bottom: 0.6em;">
+            <span style="position: absolute; left: 0; color: #4CAF50;">✓</span>
+            Compositional Understanding - Remembers that a chair has legs and a seat, and how they connect. Enables zero-shot assembly and repair.
+        </li>
+        <li style="padding-left: 1.5em; position: relative; margin-bottom: 0.6em;">
+            <span style="position: absolute; left: 0; color: #4CAF50;">✓</span>
+            Lightweight - No retraining. No regression. Just +1 matrix multiply on your frozen backbone.
+        </li>
+    </ul>
+</div>
+
+
+        <div class="status-bar">
+            <div class="status-indicator">
+                <span class="status-dot" id="statusDot"></span>
+                <span id="statusText">Connecting to server...</span>
+            </div>
+            <div>
+                <span id="kernelCount">Kernels: --</span>
+                <span style="margin-left: 20px;" id="sessionCount">Sessions: --</span>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('predict')"> Object Detection</button>
+            <button class="tab" onclick="switchTab('similarity')"> Similarity Search</button>
+            <button class="tab" onclick="switchTab('tracking')"> Object Tracking</button>
+            <button class="tab" onclick="switchTab('interpret')"> Model Interpretability</button>
+            <button class="tab" onclick="switchTab('hierarchy')"> Hierarchy Analysis</button>
+            <button class="tab" onclick="switchTab('demo')"> Quick Demo</button>
+        </div>
+
+        <!-- Object Detection Panel -->
+        <div class="panel active" id="predict-panel">
+            <h2>Object Detection & Recognition</h2>
+            <p style="color: #6b7280; margin-bottom: 20px;">Upload an image to detect and identify objects</p>
+            
+            <div class="upload-area" onclick="document.getElementById('predictImage').click()" 
+                 ondrop="handleDrop(event, 'predict')" 
+                 ondragover="handleDragOver(event)" 
+                 ondragleave="handleDragLeave(event)">
+                <div class="upload-icon">📸</div>
+                <p style="font-size: 1.1em; margin-bottom: 5px;">Drop image here or click to upload</p>
+                <p style="color: #9ca3af; font-size: 0.9em;">Supports JPG, PNG, GIF</p>
+            </div>
+            <input type="file" id="predictImage" accept="image/*" onchange="handleImageSelect(event, 'predict')">
+            
+            <div class="image-preview" id="predictPreview"></div>
+            
+            <div class="input-group">
+                <label>Text Description (optional - helps with detection)</label>
+                <input type="text" id="textDescription" placeholder="e.g., 'a red car' or 'a person holding a book'">
+            </div>
+            
+            <div class="input-group">
+                <label>Session ID (optional - for tracking)</label>
+                <input type="text" id="sessionId" placeholder="e.g., session_123">
+            </div>
+            
+            <button class="button" onclick="runPrediction()">🚀 Analyze Image</button>
+            <button class="button secondary" onclick="clearPrediction()">Clear</button>
+            
+            <div class="loading" id="predictLoading">
+                <div class="spinner"></div>
+                <p>Analyzing image...</p>
+            </div>
+            
+            <div class="results" id="predictResults"></div>
+        </div>
+
+        <!-- Similarity Search Panel -->
+        <div class="panel" id="similarity-panel">
+            <h2>Similarity Search</h2>
+            <p style="color: #6b7280; margin-bottom: 20px;">Find similar images from a collection</p>
+            
+            <div class="input-group">
+                <label>Reference Image</label>
+                <div class="upload-area" onclick="document.getElementById('refImage').click()" 
+                     style="padding: 20px;">
+                    <div class="upload-icon">🖼️</div>
+                    <p>Upload reference image</p>
+                </div>
+                <input type="file" id="refImage" accept="image/*" onchange="handleImageSelect(event, 'reference')">
+                <div class="image-preview" id="refPreview"></div>
+            </div>
+            
+            <div class="input-group">
+                <label>Candidate Images (upload multiple)</label>
+                <div class="upload-area" onclick="document.getElementById('candImages').click()" 
+                     style="padding: 20px;">
+                    <div class="upload-icon">🗂️</div>
+                    <p>Upload images to compare</p>
+                </div>
+                <input type="file" id="candImages" accept="image/*" multiple onchange="handleImageSelect(event, 'candidates')">
+                <div class="image-preview" id="candPreview"></div>
+            </div>
+            
+            <div class="input-group">
+                <label>Top K Results</label>
+                <select id="topK">
+                    <option value="3">Top 3</option>
+                    <option value="5">Top 5</option>
+                    <option value="10">Top 10</option>
+                </select>
+            </div>
+            
+            <button class="button" onclick="runSimilaritySearch()">🔍 Find Similar Images</button>
+            
+            <div class="loading" id="similarityLoading">
+                <div class="spinner"></div>
+                <p>Computing similarities...</p>
+            </div>
+            
+            <div class="results" id="similarityResults"></div>
+        </div>
+
+        <!-- Object Tracking Panel -->
+        <div class="panel" id="tracking-panel">
+            <h2>Object Tracking</h2>
+            <p style="color: #6b7280; margin-bottom: 20px;">Track objects across multiple frames</p>
+            
+            <div class="input-group">
+                <label>Tracking Session ID</label>
+                <input type="text" id="trackingSessionId" placeholder="e.g., tracking_001" value="tracking_001">
+            </div>
+            
+            <div class="upload-area" onclick="document.getElementById('trackingImage').click()">
+                <div class="upload-icon">🎥</div>
+                <p>Upload frame image</p>
+                <p style="color: #9ca3af; font-size: 0.9em;">Upload multiple images sequentially for the same session</p>
+            </div>
+            <input type="file" id="trackingImage" accept="image/*" onchange="handleTrackingImage(event)">
+            
+            <div class="image-preview" id="trackingPreview"></div>
+            
+            <button class="button" onclick="runTracking()">📹 Track Objects</button>
+            <button class="button secondary" onclick="clearTrackingSession()">New Session</button>
+            
+            <div class="loading" id="trackingLoading">
+                <div class="spinner"></div>
+                <p>Tracking objects...</p>
+            </div>
+            
+            <div class="results" id="trackingResults"></div>
+        </div>
+
+        <!-- Interpretability Panel -->
+        <div class="panel" id="interpret-panel">
+            <h2>Model Interpretability</h2>
+            <p style="color: #6b7280; margin-bottom: 20px;">Understand how the model works internally</p>
+            
+            <div class="input-group">
+                <label>Analysis Type</label>
+                <select id="analysisType">
+                    <option value="all">Complete Analysis</option>
+                    <option value="projection">Projection Space</option>
+                    <option value="clustering">Kernel Clustering</option>
+                    <option value="hierarchy">Hierarchy Structure</option>
+                    <option value="kernels">Kernel Statistics</option>
+                </select>
+            </div>
+            
+            <button class="button" onclick="runInterpretability()">📊 Analyze Model</button>
+            <button class="button" onclick="visualizeKernels()">🎨 Visualize Kernel Space</button>
+            
+            <div class="loading" id="interpretLoading">
+                <div class="spinner"></div>
+                <p>Analyzing model internals...</p>
+            </div>
+            
+            <div class="results" id="interpretResults"></div>
+        </div>
+
+        <!-- Hierarchy Panel -->
+        <div class="panel" id="hierarchy-panel">
+            <h2>Hierarchy Analysis</h2>
+            <p style="color: #6b7280; margin-bottom: 20px;">Explore object relationships and hierarchies</p>
+            
+            <button class="button" onclick="analyzeHierarchy()">🌳 Analyze Relationships</button>
+            <button class="button" onclick="listKernels()">📝 List All Kernels</button>
+            <button class="button" onclick="exportEmbeddings()">💾 Export Embeddings</button>
+            
+            <div class="loading" id="hierarchyLoading">
+                <div class="spinner"></div>
+                <p>Analyzing hierarchical structure...</p>
+            </div>
+            
+            <div class="results" id="hierarchyResults"></div>
+        </div>
+
+        <!-- Demo Panel -->
+        <div class="panel" id="demo-panel">
+            <h2>Quick Demo</h2>
+            <p style="color: #6b7280; margin-bottom: 20px;">Test the complete pipeline with one click</p>
+            
+            <button class="button" onclick="runDemo()" style="font-size: 1.2em; padding: 15px 40px;">
+                🧪 Run Complete Pipeline Test
+            </button>
+            
+            <div class="loading" id="demoLoading">
+                <div class="spinner"></div>
+                <p>Running complete pipeline test...</p>
+            </div>
+            
+            <div class="results" id="demoResults"></div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const API_BASE = 'http://localhost:8000';
+        let currentTab = 'predict';
+        let uploadedImages = {
+            predict: null,
+            reference: null,
+            candidates: [],
+            tracking: null
+        };
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            checkServerStatus();
+            setInterval(checkServerStatus, 5000);
+        });
+
+        // Server status check
+        async function checkServerStatus() {
+            try {
+                const response = await fetch(`${API_BASE}/health`);
+                const data = await response.json();
+                
+                document.getElementById('statusDot').className = 'status-dot connected';
+                document.getElementById('statusText').textContent = 'Connected';
+                document.getElementById('kernelCount').textContent = `Kernels: ${data.kernel_pool_size || 'N/A'}`;
+                document.getElementById('sessionCount').textContent = `Sessions: ${data.active_sessions || 'N/A'}`;
+            } catch (error) {
+                // Try fallback to basic server check
+                try {
+                    const response = await fetch(`${API_BASE}/`);
+                    const data = await response.json();
+                    
+                    document.getElementById('statusDot').className = 'status-dot connected';
+                    document.getElementById('statusText').textContent = 'Connected (Simple Server)';
+                    document.getElementById('kernelCount').textContent = `Kernels: ${data.num_kernels || 'N/A'}`;
+                    document.getElementById('sessionCount').textContent = `Sessions: N/A`;
+                } catch (fallbackError) {
+                    document.getElementById('statusDot').className = 'status-dot error';
+                    document.getElementById('statusText').textContent = 'Disconnected';
+                    document.getElementById('kernelCount').textContent = 'Kernels: --';
+                    document.getElementById('sessionCount').textContent = 'Sessions: --';
+                }
+            }
+        }
+
+        // Tab switching
+        function switchTab(tab) {
+            currentTab = tab;
+            
+            // Update tab buttons
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Update panels
+            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+            document.getElementById(`${tab}-panel`).classList.add('active');
+        }
+
+        // Image handling
+        function handleImageSelect(event, type) {
+            const files = event.target.files;
+            if (!files.length) return;
+            
+            if (type === 'candidates') {
+                uploadedImages.candidates = Array.from(files);
+                displayMultipleImages(files, 'candPreview');
+            } else {
+                uploadedImages[type] = files[0];
+                displayImage(files[0], `${type === 'predict' ? 'predict' : type}Preview`);
+            }
+        }
+
+        function handleTrackingImage(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            uploadedImages.tracking = file;
+            displayImage(file, 'trackingPreview');
+        }
+
+        function displayImage(file, previewId) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const preview = document.getElementById(previewId);
+                preview.innerHTML = `
+                    <div class="preview-item">
+                        <img src="${e.target.result}" alt="Preview">
+                        <button class="remove-image" onclick="removeImage('${previewId}')">×</button>
+                    </div>
+                `;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function displayMultipleImages(files, previewId) {
+            const preview = document.getElementById(previewId);
+            preview.innerHTML = '';
+            
+            Array.from(files).forEach((file, index) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const div = document.createElement('div');
+                    div.className = 'preview-item';
+                    div.innerHTML = `
+                        <img src="${e.target.result}" alt="Preview ${index + 1}">
+                        <button class="remove-image" onclick="removeCandidateImage(${index})">×</button>
+                    `;
+                    preview.appendChild(div);
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function removeImage(previewId) {
+            document.getElementById(previewId).innerHTML = '';
+            if (previewId === 'predictPreview') uploadedImages.predict = null;
+            if (previewId === 'refPreview') uploadedImages.reference = null;
+            if (previewId === 'trackingPreview') uploadedImages.tracking = null;
+        }
+
+        function removeCandidateImage(index) {
+            uploadedImages.candidates.splice(index, 1);
+            if (uploadedImages.candidates.length > 0) {
+                displayMultipleImages(uploadedImages.candidates, 'candPreview');
+            } else {
+                document.getElementById('candPreview').innerHTML = '';
+            }
+        }
+
+        // Drag and drop
+        function handleDragOver(event) {
+            event.preventDefault();
+            event.currentTarget.classList.add('dragover');
+        }
+
+        function handleDragLeave(event) {
+            event.currentTarget.classList.remove('dragover');
+        }
+
+        function handleDrop(event, type) {
+            event.preventDefault();
+            event.currentTarget.classList.remove('dragover');
+            
+            const files = event.dataTransfer.files;
+            if (files.length > 0) {
+                if (type === 'predict') {
+                    uploadedImages.predict = files[0];
+                    displayImage(files[0], 'predictPreview');
+                }
+            }
+        }
+
+        // Convert file to base64
+        async function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => {
+                    const base64 = reader.result.split(',')[1];
+                    resolve(base64);
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // API calls
+        async function runPrediction() {
+            if (!uploadedImages.predict) {
+                showError('predictResults', 'Please upload an image first');
+                return;
+            }
+            
+            const loading = document.getElementById('predictLoading');
+            const results = document.getElementById('predictResults');
+            
+            loading.classList.add('active');
+            results.innerHTML = '';
+            
+            try {
+                const base64 = await fileToBase64(uploadedImages.predict);
+                const response = await fetch(`${API_BASE}/predict`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        image_base64: base64,
+                        text_description: document.getElementById('textDescription').value || null,
+                        session_id: document.getElementById('sessionId').value || null
+                    })
+                });
+                
+                const data = await response.json();
+                displayPredictionResults(data);
+            } catch (error) {
+                showError('predictResults', `Error: ${error.message}`);
+            } finally {
+                loading.classList.remove('active');
+            }
+        }
+
+        function displayPredictionResults(data) {
+            const results = document.getElementById('predictResults');
+            
+            // Handle both response formats (simple server vs enhanced server)
+            let matchedKernels = [];
+            let numMatches = 0;
+            
+            if (data.matched_kernels && Array.isArray(data.matched_kernels)) {
+                // Enhanced server format
+                matchedKernels = data.matched_kernels;
+                numMatches = data.matched_kernels.length;
+            } else if (data.matched_kernel_ids && data.matched_scores) {
+                // Simple server format - convert to enhanced format
+                matchedKernels = data.matched_kernel_ids.map((id, index) => ({
+                    kernel_id: id,
+                    similarity_score: data.matched_scores[index] || 0,
+                    properties: {
+                        label: 'Detected Object',
+                        size: data.message ? data.message.match(/\d+x\d+/)?.[0] : 'Unknown',
+                        timestamp: new Date().toISOString()
+                    }
+                }));
+                numMatches = matchedKernels.length;
+            }
+            
+            let html = `
+                <div class="success-message">✅ Analysis complete!</div>
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-value">${data.num_kernels || 0}</div>
+                        <div class="metric-label">Total Kernels</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">${numMatches}</div>
+                        <div class="metric-label">Matches Found</div>
+                    </div>
+                </div>
+            `;
+            
+            if (data.session_info) {
+                html += `
+                    <div class="session-info">
+                        <strong>Session Tracking:</strong><br>
+                        Total Tracked Objects: ${data.session_info.total_tracked_objects}<br>
+                        History Length: ${data.session_info.history_length}
+                    </div>
+                `;
+            }
+            
+            if (data.message) {
+                html += `
+                    <div class="session-info">
+                        <strong>Server Message:</strong><br>
+                        ${data.message}
+                    </div>
+                `;
+            }
+            
+            if (matchedKernels.length > 0) {
+                html += '<h3 style="margin-top: 20px;">Matched Objects:</h3>';
+                
+                matchedKernels.forEach((kernel, index) => {
+                    const similarity = (kernel.similarity_score * 100).toFixed(1);
+                    html += `
+                        <div class="kernel-match">
+                            <div class="result-title">Match ${index + 1} - ${kernel.kernel_id.substring(0, 8)}...</div>
+                            <div>Similarity: ${similarity}%</div>
+                            <div class="similarity-bar">
+                                <div class="similarity-fill" style="width: ${similarity}%"></div>
+                            </div>
+                            <div class="properties-grid">
+                                ${Object.entries(kernel.properties || {})
+                                    .filter(([key, value]) => value !== null && value !== undefined && (Array.isArray(value) ? value.length > 0 : true))
+                                    .map(([key, value]) => `
+                                        <div class="property-item">
+                                            <span class="property-label">${key}:</span> 
+                                            ${Array.isArray(value) ? value.join(', ') : value}
+                                        </div>
+                                    `).join('')}
+                            </div>
+                        </div>
+                    `;
+                });
+            } else {
+                html += '<div class="result-card"><p>No matching objects found in the kernel pool.</p></div>';
+            }
+            
+            results.innerHTML = html;
+        }
+
+        async function runSimilaritySearch() {
+            if (!uploadedImages.reference || uploadedImages.candidates.length === 0) {
+                showError('similarityResults', 'Please upload a reference image and candidate images');
+                return;
+            }
+            
+            const loading = document.getElementById('similarityLoading');
+            const results = document.getElementById('similarityResults');
+            
+            loading.classList.add('active');
+            results.innerHTML = '';
+            
+            try {
+                const refBase64 = await fileToBase64(uploadedImages.reference);
+                const candidateBase64s = await Promise.all(
+                    uploadedImages.candidates.map(f => fileToBase64(f))
+                );
+                
+                const response = await fetch(`${API_BASE}/similarity/search`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        reference_image_base64: refBase64,
+                        candidate_images_base64: candidateBase64s,
+                        top_k: parseInt(document.getElementById('topK').value)
+                    })
+                });
+                
+                if (response.status === 404) {
+                    // Enhanced server not available, show fallback message
+                    showError('similarityResults', 'Similarity search requires the enhanced server. Please use the simple server for basic object detection.');
+                    return;
+                }
+                
+                const data = await response.json();
+                displaySimilarityResults(data);
+            } catch (error) {
+                showError('similarityResults', `Error: ${error.message}`);
+            } finally {
+                loading.classList.remove('active');
+            }
+        }
+
+        function displaySimilarityResults(data) {
+            const results = document.getElementById('similarityResults');
+            
+            let html = '<div class="success-message">✅ Similarity search complete!</div>';
+            html += '<h3>Top Matches:</h3>';
+            
+            data.top_matches.forEach((match, index) => {
+                const similarity = (match.similarity * 100).toFixed(1);
+                html += `
+                    <div class="result-card">
+                        <div class="result-title">Rank ${index + 1}: Image ${match.index + 1}</div>
+                        <div>Similarity: ${similarity}%</div>
+                        <div class="similarity-bar">
+                            <div class="similarity-fill" style="width: ${similarity}%"></div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            results.innerHTML = html;
+        }
+
+        async function runTracking() {
+            if (!uploadedImages.tracking) {
+                showError('trackingResults', 'Please upload an image to track');
+                return;
+            }
+            
+            const sessionId = document.getElementById('trackingSessionId').value;
+            if (!sessionId) {
+                showError('trackingResults', 'Please enter a session ID');
+                return;
+            }
+            
+            const loading = document.getElementById('trackingLoading');
+            const results = document.getElementById('trackingResults');
+            
+            loading.classList.add('active');
+            results.innerHTML = '';
+            
+            try {
+                const base64 = await fileToBase64(uploadedImages.tracking);
+                const response = await fetch(`${API_BASE}/track/objects`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        session_id: sessionId,
+                        image_base64: base64
+                    })
+                });
+                
+                if (response.status === 404) {
+                    showError('trackingResults', 'Object tracking requires the enhanced server. Please use the simple server for basic object detection.');
+                    return;
+                }
+                
+                const data = await response.json();
+                displayTrackingResults(data);
+            } catch (error) {
+                showError('trackingResults', `Error: ${error.message}`);
+            } finally {
+                loading.classList.remove('active');
+            }
+        }
+
+        function displayTrackingResults(data) {
+            const results = document.getElementById('trackingResults');
+            
+            let html = `
+                <div class="success-message">✅ Object tracking updated!</div>
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-value">${data.session_summary.total_unique_objects}</div>
+                        <div class="metric-label">Unique Objects</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">${data.session_summary.persistent_objects}</div>
+                        <div class="metric-label">Persistent Objects</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">${data.session_summary.total_observations}</div>
+                        <div class="metric-label">Total Observations</div>
+                    </div>
+                </div>
+            `;
+            
+            if (data.persistent_objects && data.persistent_objects.length > 0) {
+                html += '<h3>Persistent Objects (seen multiple times):</h3>';
+                data.persistent_objects.forEach(obj => {
+                    html += `
+                        <div class="result-card">
+                            <div class="result-title">Object: ${obj.kernel_uuid.substring(0, 8)}...</div>
+                            <div>Appearances: ${obj.appearance_count}</div>
+                            <div>First Seen: ${new Date(obj.first_seen).toLocaleTimeString()}</div>
+                            <div>Last Seen: ${new Date(obj.last_seen).toLocaleTimeString()}</div>
+                        </div>
+                    `;
+                });
+            }
+            
+            html += '<h3>Current Frame Detections:</h3>';
+            data.current_detections.forEach((detection, index) => {
+                const similarity = (detection.similarity * 100).toFixed(1);
+                html += `
+                    <div class="kernel-match">
+                        <div class="result-title">Detection ${index + 1}</div>
+                        <div>Kernel: ${detection.kernel_id.substring(0, 8)}...</div>
+                        <div>Confidence: ${similarity}%</div>
+                        <div class="similarity-bar">
+                            <div class="similarity-fill" style="width: ${similarity}%"></div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            results.innerHTML = html;
+        }
+
+        function clearTrackingSession() {
+            const sessionId = 'tracking_' + Date.now();
+            document.getElementById('trackingSessionId').value = sessionId;
+            document.getElementById('trackingResults').innerHTML = '';
+            uploadedImages.tracking = null;
+            document.getElementById('trackingPreview').innerHTML = '';
+        }
+
+        async function runInterpretability() {
+            const loading = document.getElementById('interpretLoading');
+            const results = document.getElementById('interpretResults');
+            
+            loading.classList.add('active');
+            results.innerHTML = '';
+            
+            try {
+                const analysisType = document.getElementById('analysisType').value;
+                const response = await fetch(`${API_BASE}/interpret/analyze`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ analysis_type: analysisType })
+                });
+                
+                if (response.status === 404) {
+                    showError('interpretResults', 'Model interpretability requires the enhanced server. Please use the simple server for basic object detection.');
+                    return;
+                }
+                
+                const data = await response.json();
+                displayInterpretabilityResults(data);
+            } catch (error) {
+                showError('interpretResults', `Error: ${error.message}`);
+            } finally {
+                loading.classList.remove('active');
+            }
+        }
+
+        function displayInterpretabilityResults(data) {
+            const results = document.getElementById('interpretResults');
+            
+            let html = '<div class="success-message">✅ Analysis complete!</div>';
+            
+            // Projection Analysis
+            if (data.projection_analysis) {
+                const proj = data.projection_analysis;
+                html += `
+                    <div class="result-card">
+                        <h3>Projection Space Analysis</h3>
+                        <div class="metrics-grid">
+                            <div class="metric-card">
+                                <div class="metric-value">${proj.effective_rank}</div>
+                                <div class="metric-label">Effective Rank</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-value">${(proj.projection_quality * 100).toFixed(1)}%</div>
+                                <div class="metric-label">Info Preserved (Top 10)</div>
+                            </div>
+                        </div>
+                        <div style="margin-top: 15px;">
+                            <strong>Top Singular Values:</strong><br>
+                            ${proj.singular_values.slice(0, 5).map((v, i) => 
+                                `<span style="margin-right: 10px;">σ${i+1}: ${v.toFixed(3)}</span>`
+                            ).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Kernel Statistics
+            if (data.kernel_statistics) {
+                const stats = data.kernel_statistics;
+                html += `
+                    <div class="result-card">
+                        <h3>Kernel Pool Statistics</h3>
+                        <div class="metrics-grid">
+                            <div class="metric-card">
+                                <div class="metric-value">${stats.total_kernels}</div>
+                                <div class="metric-label">Total Kernels</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-value">${(stats.diversity_score * 100).toFixed(1)}%</div>
+                                <div class="metric-label">Diversity Score</div>
+                            </div>
+                        </div>
+                        <div style="margin-top: 15px;">
+                            Avg Similarity: ${stats.avg_similarity.toFixed(3)}<br>
+                            Min Similarity: ${stats.min_similarity.toFixed(3)}<br>
+                            Max Similarity: ${stats.max_similarity.toFixed(3)}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Hierarchy Analysis
+            if (data.hierarchy_analysis) {
+                const hier = data.hierarchy_analysis;
+                html += `
+                    <div class="result-card">
+                        <h3>Hierarchy Structure</h3>
+                        <div class="metrics-grid">
+                            <div class="metric-card">
+                                <div class="metric-value">${hier.num_nodes}</div>
+                                <div class="metric-label">Nodes</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-value">${hier.num_edges}</div>
+                                <div class="metric-label">Edges</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-value">${hier.num_components}</div>
+                                <div class="metric-label">Components</div>
+                            </div>
+                        </div>
+                        ${hier.relationships_summary && Object.keys(hier.relationships_summary).length > 0 ? `
+                            <div style="margin-top: 15px;">
+                                <strong>Relationship Types:</strong><br>
+                                ${Object.entries(hier.relationships_summary).map(([type, count]) => 
+                                    `<span style="margin-right: 15px;">${type}: ${count}</span>`
+                                ).join('')}
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            }
+            
+            // Clustering Analysis
+            if (data.kernel_clustering) {
+                const cluster = data.kernel_clustering;
+                if (!cluster.error) {
+                    html += `
+                        <div class="result-card">
+                            <h3>Kernel Clustering</h3>
+                            ${cluster.pca_variance_explained ? `
+                                <div>PCA Variance Explained: 
+                                    ${cluster.pca_variance_explained.map((v, i) => 
+                                        `PC${i+1}: ${(v*100).toFixed(1)}%`
+                                    ).join(', ')}
+                                </div>
+                            ` : ''}
+                            <div style="margin-top: 10px;">
+                                <strong>Kernel Labels:</strong><br>
+                                ${cluster.kernel_labels.slice(0, 10).join(', ')}
+                                ${cluster.kernel_labels.length > 10 ? '...' : ''}
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+            
+            results.innerHTML = html;
+        }
+
+        async function visualizeKernels() {
+            const loading = document.getElementById('interpretLoading');
+            const results = document.getElementById('interpretResults');
+            
+            loading.classList.add('active');
+            
+            try {
+                const response = await fetch(`${API_BASE}/interpret/visualize_kernels`, {
+                    method: 'POST'
+                });
+                
+                const data = await response.json();
+                
+                if (data.visualization) {
+                    results.innerHTML = `
+                        <div class="success-message">✅ Visualization generated!</div>
+                        <div class="chart-container">
+                            <img src="${data.visualization}" style="max-width: 100%; height: auto;">
+                        </div>
+                        <p style="text-align: center; color: #6b7280;">
+                            Kernel Count: ${data.kernel_count}
+                        </p>
+                    `;
+                } else {
+                    showError('interpretResults', 'Insufficient data for visualization');
+                }
+            } catch (error) {
+                showError('interpretResults', `Error: ${error.message}`);
+            } finally {
+                loading.classList.remove('active');
+            }
+        }
+
+        async function analyzeHierarchy() {
+            const loading = document.getElementById('hierarchyLoading');
+            const results = document.getElementById('hierarchyResults');
+            
+            loading.classList.add('active');
+            results.innerHTML = '';
+            
+            try {
+                const response = await fetch(`${API_BASE}/hierarchy/analyze_relationships`, {
+                    method: 'POST'
+                });
+                
+                const data = await response.json();
+                displayHierarchyResults(data);
+            } catch (error) {
+                showError('hierarchyResults', `Error: ${error.message}`);
+            } finally {
+                loading.classList.remove('active');
+            }
+        }
+
+        function displayHierarchyResults(data) {
+            const results = document.getElementById('hierarchyResults');
+            
+            let html = '<div class="success-message">✅ Hierarchy analysis complete!</div>';
+            
+            if (data.hierarchy_stats) {
+                html += `
+                    <div class="metrics-grid">
+                        <div class="metric-card">
+                            <div class="metric-value">${data.hierarchy_stats.num_nodes}</div>
+                            <div class="metric-label">Total Nodes</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value">${data.hierarchy_stats.num_edges}</div>
+                            <div class="metric-label">Total Edges</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value">${data.hierarchy_stats.average_degree.toFixed(2)}</div>
+                            <div class="metric-label">Avg Degree</div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            if (data.top_connected_objects && data.top_connected_objects.length > 0) {
+                html += '<h3>Most Connected Objects:</h3>';
+                data.top_connected_objects.slice(0, 5).forEach(([uuid, info]) => {
+                    html += `
+                        <div class="result-card">
+                            <div class="result-title">${info.label || 'Unknown'} (${uuid.substring(0, 8)}...)</div>
+                            <div>Connections: ${info.count}</div>
+                            <div>Relationship Types: ${info.types.join(', ') || 'None'}</div>
+                        </div>
+                    `;
+                });
+            }
+            
+            if (data.hierarchical_clusters) {
+                html += `
+                    <div class="result-card">
+                        <h3>Clustering Information</h3>
+                        <div>Number of Clusters: ${data.hierarchical_clusters.num_clusters}</div>
+                        <div>Cluster Sizes: ${data.hierarchical_clusters.cluster_sizes.join(', ')}</div>
+                    </div>
+                `;
+            }
+            
+            results.innerHTML = html;
+        }
+
+        async function listKernels() {
+            const loading = document.getElementById('hierarchyLoading');
+            const results = document.getElementById('hierarchyResults');
+            
+            loading.classList.add('active');
+            results.innerHTML = '';
+            
+            try {
+                const response = await fetch(`${API_BASE}/kernels/list`);
+                const data = await response.json();
+                
+                let html = `
+                    <div class="success-message">✅ Found ${data.total_kernels} kernels</div>
+                    <h3>Kernel List:</h3>
+                `;
+                
+                data.kernels.slice(0, 20).forEach(kernel => {
+                    html += `
+                        <div class="result-card">
+                            <div class="result-title">Kernel: ${kernel.uuid.substring(0, 8)}...</div>
+                            <div>Relationships: ${kernel.num_relationships}</div>
+                            <div>Last Updated: ${new Date(kernel.last_updated * 1000).toLocaleString()}</div>
+                            ${kernel.properties.label ? `<div>Label: ${kernel.properties.label}</div>` : ''}
+                        </div>
+                    `;
+                });
+                
+                if (data.total_kernels > 20) {
+                    html += `<p style="text-align: center; color: #6b7280;">Showing first 20 of ${data.total_kernels} kernels</p>`;
+                }
+                
+                results.innerHTML = html;
+            } catch (error) {
+                showError('hierarchyResults', `Error: ${error.message}`);
+            } finally {
+                loading.classList.remove('active');
+            }
+        }
+
+        async function exportEmbeddings() {
+            const loading = document.getElementById('hierarchyLoading');
+            
+            loading.classList.add('active');
+            
+            try {
+                const response = await fetch(`${API_BASE}/export/kernel_embeddings`, {
+                    method: 'POST'
+                });
+                
+                const data = await response.json();
+                
+                // Create downloadable JSON file
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `kernel_embeddings_${Date.now()}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                showSuccess('hierarchyResults', `Exported ${data.num_kernels} kernel embeddings`);
+            } catch (error) {
+                showError('hierarchyResults', `Error: ${error.message}`);
+            } finally {
+                loading.classList.remove('active');
+            }
+        }
+
+        async function runDemo() {
+            const loading = document.getElementById('demoLoading');
+            const results = document.getElementById('demoResults');
+            
+            loading.classList.add('active');
+            results.innerHTML = '';
+            
+            try {
+                const response = await fetch(`${API_BASE}/demo/test_pipeline`, {
+                    method: 'POST'
+                });
+                
+                const data = await response.json();
+                
+                if (data.pipeline_test === 'success') {
+                    let html = `
+                        <div class="success-message">✅ Pipeline test successful!</div>
+                        <div class="metrics-grid">
+                            <div class="metric-card">
+                                <div class="metric-value">✓</div>
+                                <div class="metric-label">Prediction</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-value">✓</div>
+                                <div class="metric-label">Interpretability</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-value">✓</div>
+                                <div class="metric-label">Hierarchy</div>
+                            </div>
+                        </div>
+                        <div class="result-card">
+                            <h3>Test Results:</h3>
+                            <div>✅ Prediction: ${data.prediction_results.num_kernels} kernels, ${data.prediction_results.num_matches} matches</div>
+                            <div>✅ Interpretability modules: ${data.interpretability_available.join(', ')}</div>
+                            <div>✅ Hierarchy analysis: ${data.hierarchy_available ? 'Available' : 'Not available'}</div>
+                        </div>
+                        <div class="result-card">
+                            <h3>Test Image Used:</h3>
+                            <img src="data:image/png;base64,${data.test_image_base64}" style="max-width: 200px; border-radius: 8px;">
+                        </div>
+                    `;
+                    results.innerHTML = html;
+                } else {
+                    showError('demoResults', `Pipeline test failed: ${data.error}`);
+                }
+            } catch (error) {
+                showError('demoResults', `Error: ${error.message}`);
+            } finally {
+                loading.classList.remove('active');
+            }
+        }
+
+        function clearPrediction() {
+            uploadedImages.predict = null;
+            document.getElementById('predictPreview').innerHTML = '';
+            document.getElementById('predictResults').innerHTML = '';
+            document.getElementById('textDescription').value = '';
+            document.getElementById('sessionId').value = '';
+        }
+
+        function showError(elementId, message) {
+            document.getElementById(elementId).innerHTML = `
+                <div class="error-message">❌ ${message}</div>
+            `;
+        }
+
+        function showSuccess(elementId, message) {
+            document.getElementById(elementId).innerHTML = `
+                <div class="success-message">✅ ${message}</div>
+            `;
+        }
+    </script>
+</body>
+</html>

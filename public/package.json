@@ -1,0 +1,14 @@
+{
+  "name": "core-object-centric-ai-frontend",
+  "version": "1.0.0",
+  "description": "Frontend for CORE Object-Centric AI application",
+  "main": "index.html",
+  "scripts": {
+    "build": "echo 'Static site - no build required'",
+    "start": "echo 'Static site - no start required'"
+  },
+  "keywords": ["ai", "object-centric", "frontend", "static"],
+  "author": "CORE AI Team",
+  "license": "MIT",
+  "type": "module"
+}
