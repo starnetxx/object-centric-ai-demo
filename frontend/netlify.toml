@@ -1,9 +1,24 @@
 [build]
   publish = "."
-  command = "echo 'No build step required for static HTML'"
+  command = "echo 'Static HTML site - no build required'"
 
 [build.environment]
   NODE_VERSION = "18"
+
+# Disable Python detection
+[build.processing]
+  skip_processing = false
+
+[build.processing.css]
+  bundle = false
+  minify = false
+
+[build.processing.js]
+  bundle = false
+  minify = false
+
+[build.processing.html]
+  pretty_urls = true
 
 [[headers]]
   for = "/*"
