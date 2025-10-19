@@ -1068,9 +1068,25 @@ CORE gives it memory that lasts.
                     return;
                 }
                 
+                if (!response.ok) {
+                    showError('trackingResults', `Server error: ${response.status} ${response.statusText}`);
+                    return;
+                }
+                
                 const data = await response.json();
+                
+                // Add debug logging
+                console.log('Tracking response:', data);
+                
+                // Check if response is valid
+                if (!data || typeof data !== 'object') {
+                    showError('trackingResults', 'Invalid response from server');
+                    return;
+                }
+                
                 displayTrackingResults(data);
             } catch (error) {
+                console.error('Tracking error:', error);
                 showError('trackingResults', `Error: ${error.message}`);
             } finally {
                 loading.classList.remove('active');
@@ -1080,19 +1096,26 @@ CORE gives it memory that lasts.
         function displayTrackingResults(data) {
             const results = document.getElementById('trackingResults');
             
+            // Handle different response formats and add error checking
+            const sessionSummary = data.session_summary || {};
+            const totalUniqueObjects = sessionSummary.total_unique_objects || 0;
+            const persistentObjects = sessionSummary.persistent_objects || 0;
+            const totalObservations = sessionSummary.total_observations || 0;
+            const sessionCreated = sessionSummary.session_created || 'Unknown';
+            
             let html = `
                 <div class="success-message">✅ Object tracking updated!</div>
                 <div class="metrics-grid">
                     <div class="metric-card">
-                        <div class="metric-value">${data.session_summary.total_unique_objects}</div>
+                        <div class="metric-value">${totalUniqueObjects}</div>
                         <div class="metric-label">Unique Objects</div>
                     </div>
                     <div class="metric-card">
-                        <div class="metric-value">${data.session_summary.persistent_objects}</div>
+                        <div class="metric-value">${persistentObjects}</div>
                         <div class="metric-label">Persistent Objects</div>
                     </div>
                     <div class="metric-card">
-                        <div class="metric-value">${data.session_summary.total_observations}</div>
+                        <div class="metric-value">${totalObservations}</div>
                         <div class="metric-label">Total Observations</div>
                     </div>
                 </div>
