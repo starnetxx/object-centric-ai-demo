@@ -19,19 +19,19 @@
             padding: 0;
             box-sizing: border-box;
         }
-
-        body {
+        
+        body { 
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
             background: linear-gradient(135deg, #2f2f2f 0%, #000000 100%);
             min-height: 100vh;
             padding: 20px;
         }
-
-        .container {
+        
+        .container { 
             max-width: 1400px;
-            margin: 0 auto;
+            margin: 0 auto; 
         }
-
+        
         .header {
             text-align: center;
             color: white;
@@ -107,7 +107,7 @@
             transition: all 0.3s ease;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
-
+        
         .tab:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(0,0,0,0.15);
@@ -215,9 +215,9 @@
         }
 
         .input-group {
-            margin-bottom: 20px;
-        }
-
+                margin-bottom: 20px;
+            }
+            
         .input-group label {
             display: block;
             margin-bottom: 8px;
@@ -300,12 +300,12 @@
             color: #1f2937;
             margin-bottom: 10px;
             font-size: 1.1em;
-        }
-
-        .kernel-match {
+            }
+            
+            .kernel-match {
             background: white;
             border-radius: 8px;
-            padding: 15px;
+                padding: 15px;
             margin-bottom: 10px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
@@ -459,7 +459,7 @@
 </p>
              
 
-     </div>
+        </div>
      <div class="status-bar"> 
     <ul style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; list-style: none; padding-left: 0;">
         <li style="font-weight: bold; margin-bottom: 0.8em;">
@@ -502,7 +502,7 @@ CORE gives it memory that lasts.
             <button class="tab" onclick="switchTab('hierarchy')"> Hierarchy Analysis</button>
             <button class="tab" onclick="switchTab('demo')"> Quick Demo</button>
         </div>
-
+        
         <!-- Object Detection Panel -->
         <div class="panel active" id="predict-panel">
             <h2>Object Detection & Recognition</h2>
@@ -861,7 +861,7 @@ CORE gives it memory that lasts.
             try {
                 const base64 = await fileToBase64(uploadedImages.predict);
                 const response = await fetch(`${API_BASE}/predict`, {
-                    method: 'POST',
+                        method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         image_base64: base64,
@@ -1001,9 +1001,9 @@ CORE gives it memory that lasts.
                     // Enhanced server not available, show fallback message
                     showError('similarityResults', 'Similarity search requires the enhanced server. Please use the simple server for basic object detection.');
                     return;
-                }
-                
-                const data = await response.json();
+                    }
+
+                    const data = await response.json();
                 displaySimilarityResults(data);
             } catch (error) {
                 showError('similarityResults', `Error: ${error.message}`);
@@ -1305,7 +1305,7 @@ CORE gives it memory that lasts.
                             Kernel Count: ${data.kernel_count}
                         </p>
                     `;
-                } else {
+                    } else {
                     showError('interpretResults', 'Insufficient data for visualization');
                 }
             } catch (error) {
@@ -1329,7 +1329,7 @@ CORE gives it memory that lasts.
                 
                 const data = await response.json();
                 displayHierarchyResults(data);
-            } catch (error) {
+                } catch (error) {
                 showError('hierarchyResults', `Error: ${error.message}`);
             } finally {
                 loading.classList.remove('active');
