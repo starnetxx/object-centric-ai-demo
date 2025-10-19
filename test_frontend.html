@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Frontend Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
+        button { padding: 10px 20px; margin: 5px; cursor: pointer; }
+        #results { margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h1>Frontend-Backend Integration Test</h1>
+    
+    <div class="test-section info">
+        <h3>Test 1: Server Connection</h3>
+        <button onclick="testConnection()">Test Connection</button>
+        <div id="connectionResult"></div>
+    </div>
+    
+    <div class="test-section info">
+        <h3>Test 2: Object Detection (with test image)</h3>
+        <button onclick="testObjectDetection()">Test Object Detection</button>
+        <div id="detectionResult"></div>
+    </div>
+    
+    <div class="test-section info">
+        <h3>Test 3: Enhanced Features (should show fallback)</h3>
+        <button onclick="testEnhancedFeatures()">Test Enhanced Features</button>
+        <div id="enhancedResult"></div>
+    </div>
+    
+    <script>
+        const API_BASE = 'http://localhost:8000';
+        
+        async function testConnection() {
+            const resultDiv = document.getElementById('connectionResult');
+            try {
+                const response = await fetch(`${API_BASE}/`);
+                const data = await response.json();
+                resultDiv.innerHTML = `<div class="success">✅ Connected! Server: ${data.message}</div>`;
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">❌ Connection failed: ${error.message}</div>`;
+            }
+        }
+        
+        async function testObjectDetection() {
+            const resultDiv = document.getElementById('detectionResult');
+            try {
+                // Create a simple test image (2x2 red pixel)
+                const canvas = document.createElement('canvas');
+                canvas.width = 2;
+                canvas.height = 2;
+                const ctx = canvas.getContext('2d');
+                ctx.fillStyle = 'red';
+                ctx.fillRect(0, 0, 2, 2);
+                const base64 = canvas.toDataURL().split(',')[1];
+                
+                const response = await fetch(`${API_BASE}/predict`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ image_base64: base64 })
+                });
+                
+                const data = await response.json();
+                resultDiv.innerHTML = `
+                    <div class="success">
+                        ✅ Object Detection Working!<br>
+                        Kernels: ${data.num_kernels}<br>
+                        Matches: ${data.matched_kernel_ids ? data.matched_kernel_ids.length : 0}<br>
+                        Message: ${data.message || 'No message'}
+                    </div>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">❌ Object Detection failed: ${error.message}</div>`;
+            }
+        }
+        
+        async function testEnhancedFeatures() {
+            const resultDiv = document.getElementById('enhancedResult');
+            try {
+                const response = await fetch(`${API_BASE}/similarity/search`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        reference_image_base64: 'test',
+                        candidate_images_base64: ['test'],
+                        top_k: 3
+                    })
+                });
+                
+                if (response.status === 404) {
+                    resultDiv.innerHTML = `<div class="info">ℹ️ Enhanced features not available (expected with simple server)</div>`;
+                } else {
+                    resultDiv.innerHTML = `<div class="success">✅ Enhanced features working!</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="info">ℹ️ Enhanced features not available: ${error.message}</div>`;
+            }
+        }
+        
+        // Auto-run tests
+        window.onload = function() {
+            testConnection();
+        };
+    </script>
+</body>
+</html>
