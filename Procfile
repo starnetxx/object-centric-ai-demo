@@ -1,1 +1,1 @@
-web: python enhanced_server.py
+web: python3 railway_server.py
