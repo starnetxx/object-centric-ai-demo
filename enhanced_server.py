@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """
 Enhanced FastAPI server with all features, production-ready for Railway deployment.
 Simplified version without PyTorch Geometric dependencies.

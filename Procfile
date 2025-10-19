@@ -1,1 +1,1 @@
-web: python enhanced_server.py
+web: bash start.sh
