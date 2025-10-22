@@ -33,7 +33,7 @@ from transformers import CLIPProcessor, CLIPModel
 app = FastAPI(title="CORE - Object-Centric AI API")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["*", "null", "file://"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
