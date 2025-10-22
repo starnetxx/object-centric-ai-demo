@@ -707,20 +707,41 @@ CORE gives it memory that lasts.
                 document.getElementById('kernelCount').textContent = `Kernels: ${data.kernel_pool_size || 'N/A'}`;
                 document.getElementById('sessionCount').textContent = `Sessions: ${data.active_sessions || 'N/A'}`;
             } catch (error) {
-                // Try fallback to basic server check
+                // Try mobile-friendly test endpoint
                 try {
-                    const response = await fetch(`${API_BASE}/`);
+                    const response = await fetch(`${API_BASE}/mobile-test`);
                     const data = await response.json();
                     
                     document.getElementById('statusDot').className = 'status-dot connected';
-                    document.getElementById('statusText').textContent = 'Connected (Simple Server)';
-                    document.getElementById('kernelCount').textContent = `Kernels: ${data.num_kernels || 'N/A'}`;
+                    document.getElementById('statusText').textContent = 'Connected (Mobile)';
+                    document.getElementById('kernelCount').textContent = `Kernels: ${data.kernel_pool_size || 'N/A'}`;
                     document.getElementById('sessionCount').textContent = `Sessions: N/A`;
-                } catch (fallbackError) {
-                    document.getElementById('statusDot').className = 'status-dot error';
-                    document.getElementById('statusText').textContent = 'Disconnected';
-                    document.getElementById('kernelCount').textContent = 'Kernels: --';
-                    document.getElementById('sessionCount').textContent = 'Sessions: --';
+                } catch (mobileError) {
+                    // Try fallback to basic server check
+                    try {
+                        const response = await fetch(`${API_BASE}/`);
+                        const data = await response.json();
+                        
+                        document.getElementById('statusDot').className = 'status-dot connected';
+                        document.getElementById('statusText').textContent = 'Connected (Simple Server)';
+                        document.getElementById('kernelCount').textContent = `Kernels: ${data.num_kernels || 'N/A'}`;
+                        document.getElementById('sessionCount').textContent = `Sessions: N/A`;
+                    } catch (fallbackError) {
+                        document.getElementById('statusDot').className = 'status-dot error';
+                        document.getElementById('statusText').textContent = 'Disconnected';
+                        document.getElementById('kernelCount').textContent = 'Kernels: --';
+                        document.getElementById('sessionCount').textContent = 'Sessions: --';
+                        
+                        // Show detailed error information
+                        console.error('Connection failed:', {
+                            apiUrl: API_BASE,
+                            error: error.message,
+                            mobileError: mobileError.message,
+                            fallbackError: fallbackError.message,
+                            userAgent: navigator.userAgent,
+                            location: window.location.href
+                        });
+                    }
                 }
             }
         }

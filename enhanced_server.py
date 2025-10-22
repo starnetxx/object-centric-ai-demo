@@ -35,8 +35,9 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=["*", "null", "file://"],
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_headers=["*", "Content-Type", "Authorization", "X-Requested-With"],
+    expose_headers=["*"],
 )
 
 # Simple scatter_mean implementation (no torch-scatter needed)
@@ -711,6 +712,26 @@ async def health_check():
         'device': str(device),
         'kernel_pool_size': len(kernel_pool.kernels),
         'active_sessions': len(session_tracker.sessions)
+    })
+
+@app.get("/mobile-test")
+async def mobile_test():
+    """Mobile-friendly test endpoint with detailed info."""
+    return JSONResponse(content={
+        'status': 'mobile_accessible',
+        'timestamp': datetime.now().isoformat(),
+        'server': 'CORE Object-Centric AI',
+        'version': '1.0.0',
+        'cors_enabled': True,
+        'kernel_pool_size': len(kernel_pool.kernels),
+        'device_info': {
+            'device': str(device),
+            'model_loaded': _loaded_ckpt_path is not None
+        },
+        'endpoints_available': [
+            '/health', '/predict', '/similarity/search', 
+            '/track/objects', '/interpret/analyze', '/docs'
+        ]
     })
 
 @app.get("/")
