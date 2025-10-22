@@ -1,1 +1,1 @@
-web: python3 start.py
+web: python enhanced_server.py

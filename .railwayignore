@@ -1,0 +1,8 @@
+# Railway ignore file - ignore frontend files
+public/
+frontend/
+.netlifyignore
+netlify.toml
+*.md
+README.md
+test_*.html
