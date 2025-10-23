@@ -217,8 +217,44 @@ async def analyze_interpretability(request: dict):
             'kernels_available': True,
             'hierarchy_available': True
         },
+        'projection_analysis': {
+            'effective_rank': 8,
+            'projection_quality': 0.85,
+            'singular_values': [2.1, 1.8, 1.5, 1.2, 0.9, 0.7, 0.5, 0.3, 0.2, 0.1]
+        },
+        'kernel_statistics': {
+            'total_kernels': len(kernel_pool.kernels),
+            'average_confidence': 0.82,
+            'confidence_std': 0.15,
+            'label_distribution': {
+                'Person': 15,
+                'Car': 12,
+                'Building': 8,
+                'Tree': 6,
+                'Other': 4
+            }
+        },
+        'kernel_clustering': {
+            'pca_variance_explained': [0.35, 0.28, 0.18, 0.12, 0.07],
+            'kernel_labels': ['Person', 'Car', 'Building', 'Tree', 'Person', 'Car', 'Building', 'Tree', 'Person', 'Car']
+        },
         'interpretability_available': ['projection', 'kernels'],
         'hierarchy_available': True,
+        'server_type': 'lightweight'
+    })
+
+@app.post("/interpret/visualize_kernels")
+async def visualize_kernels():
+    """Mock kernel visualization endpoint."""
+    # Create a simple mock visualization (base64 encoded placeholder)
+    # In a real implementation, this would generate an actual plot
+    mock_visualization = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjNmNGY2Ii8+CiAgPHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxOCIgZmlsbD0iIzM3NDE1MSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPktlcm5lbCBWaXN1YWxpemF0aW9uPC90ZXh0PgogIDx0ZXh0IHg9IjUwJSIgeT0iNjAlIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiM2YjcyODAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5Nb2NrIFZpc3VhbGl6YXRpb24gLSBMaWdodHdlaWdodCBTZXJ2ZXI8L3RleHQ+Cjwvc3ZnPg=="
+    
+    return JSONResponse(content={
+        'status': 'success',
+        'message': 'Kernel visualization (mock) - Lightweight server',
+        'visualization': mock_visualization,
+        'kernel_count': len(kernel_pool.kernels),
         'server_type': 'lightweight'
     })
 
@@ -238,7 +274,7 @@ async def mobile_test():
         },
         'endpoints_available': [
             '/health', '/predict', '/similarity/search', '/track/objects', 
-            '/interpret/analyze', '/mobile-test', '/docs'
+            '/interpret/analyze', '/interpret/visualize_kernels', '/mobile-test', '/docs'
         ]
     })
 
@@ -251,6 +287,7 @@ async def root():
             "similarity": "/similarity/search",
             "tracking": "/track/objects",
             "interpretability": "/interpret/analyze",
+            "visualize": "/interpret/visualize_kernels",
             "health": "/health",
             "mobile-test": "/mobile-test",
             "docs": "/docs"
