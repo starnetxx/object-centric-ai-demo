@@ -131,44 +131,58 @@ async def health_check():
 @app.post("/similarity/search")
 async def similarity_search(request: dict):
     """Mock similarity search endpoint."""
+    # Create mock top_matches in the format expected by frontend
+    top_matches = []
+    candidate_images = request.get('candidate_images_base64', [])
+    top_k = request.get('top_k', 5)
+    
+    for i in range(min(len(candidate_images), top_k)):
+        top_matches.append({
+            'index': i,
+            'similarity': 0.85 - (i * 0.1),  # Decreasing similarity scores
+            'image_base64': candidate_images[i] if i < len(candidate_images) else ''
+        })
+    
     return JSONResponse(content={
         'status': 'success',
         'message': 'Similarity search (mock) - Lightweight server',
-        'results': [
-            {
-                'kernel_id': str(uuid.uuid4()),
-                'similarity_score': 0.85,
-                'properties': {
-                    'label': 'Similar Object',
-                    'confidence': 0.85,
-                    'timestamp': datetime.now().isoformat()
-                }
-            }
-        ],
-        'total_matches': 1,
+        'top_matches': top_matches,
+        'total_matches': len(top_matches),
         'server_type': 'lightweight'
     })
 
 @app.post("/track/objects")
 async def track_objects(request: dict):
     """Mock object tracking endpoint."""
+    # Create mock persistent objects
+    persistent_objects = [
+        {
+            'kernel_uuid': str(uuid.uuid4()),
+            'first_seen': datetime.now().isoformat(),
+            'last_seen': datetime.now().isoformat(),
+            'appearance_count': 3,
+            'properties': {'label': 'Person', 'confidence': 0.92}
+        },
+        {
+            'kernel_uuid': str(uuid.uuid4()),
+            'first_seen': datetime.now().isoformat(),
+            'last_seen': datetime.now().isoformat(),
+            'appearance_count': 2,
+            'properties': {'label': 'Car', 'confidence': 0.88}
+        }
+    ]
+    
     return JSONResponse(content={
         'status': 'success',
         'message': 'Object tracking (mock) - Lightweight server',
         'session_summary': {
             'total_unique_objects': 3,
-            'persistent_objects': 2,
+            'persistent_objects': len(persistent_objects),
             'total_observations': 5,
             'session_created': datetime.now().isoformat()
         },
-        'tracked_objects': [
-            {
-                'kernel_uuid': str(uuid.uuid4()),
-                'first_seen': datetime.now().isoformat(),
-                'appearance_count': 2,
-                'properties': {'label': 'Tracked Object'}
-            }
-        ],
+        'persistent_objects': persistent_objects,
+        'tracked_objects': persistent_objects,
         'server_type': 'lightweight'
     })
 
