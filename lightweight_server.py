@@ -128,6 +128,66 @@ async def health_check():
         'server_type': 'lightweight'
     })
 
+@app.post("/similarity/search")
+async def similarity_search(request: dict):
+    """Mock similarity search endpoint."""
+    return JSONResponse(content={
+        'status': 'success',
+        'message': 'Similarity search (mock) - Lightweight server',
+        'results': [
+            {
+                'kernel_id': str(uuid.uuid4()),
+                'similarity_score': 0.85,
+                'properties': {
+                    'label': 'Similar Object',
+                    'confidence': 0.85,
+                    'timestamp': datetime.now().isoformat()
+                }
+            }
+        ],
+        'total_matches': 1,
+        'server_type': 'lightweight'
+    })
+
+@app.post("/track/objects")
+async def track_objects(request: dict):
+    """Mock object tracking endpoint."""
+    return JSONResponse(content={
+        'status': 'success',
+        'message': 'Object tracking (mock) - Lightweight server',
+        'session_summary': {
+            'total_unique_objects': 3,
+            'persistent_objects': 2,
+            'total_observations': 5,
+            'session_created': datetime.now().isoformat()
+        },
+        'tracked_objects': [
+            {
+                'kernel_uuid': str(uuid.uuid4()),
+                'first_seen': datetime.now().isoformat(),
+                'appearance_count': 2,
+                'properties': {'label': 'Tracked Object'}
+            }
+        ],
+        'server_type': 'lightweight'
+    })
+
+@app.post("/interpret/analyze")
+async def analyze_interpretability(request: dict):
+    """Mock interpretability analysis endpoint."""
+    return JSONResponse(content={
+        'status': 'success',
+        'message': 'Interpretability analysis (mock) - Lightweight server',
+        'analysis_results': {
+            'projection_available': True,
+            'kernels_available': True,
+            'hierarchy_available': True
+        },
+        'interpretability_available': ['projection', 'kernels'],
+        'hierarchy_available': True,
+        'server_type': 'lightweight'
+    })
+
 @app.get("/mobile-test")
 async def mobile_test():
     """Mobile-friendly test endpoint."""
@@ -143,7 +203,8 @@ async def mobile_test():
             'model_loaded': True
         },
         'endpoints_available': [
-            '/health', '/predict', '/mobile-test', '/docs'
+            '/health', '/predict', '/similarity/search', '/track/objects', 
+            '/interpret/analyze', '/mobile-test', '/docs'
         ]
     })
 
@@ -153,6 +214,9 @@ async def root():
         "message": "CORE - Object-Centric AI API (Lightweight) is running!",
         "endpoints": {
             "predict": "/predict",
+            "similarity": "/similarity/search",
+            "tracking": "/track/objects",
+            "interpretability": "/interpret/analyze",
             "health": "/health",
             "mobile-test": "/mobile-test",
             "docs": "/docs"
