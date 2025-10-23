@@ -172,6 +172,25 @@ async def track_objects(request: dict):
         }
     ]
     
+    # Create mock current detections
+    current_detections = [
+        {
+            'kernel_id': str(uuid.uuid4()),
+            'similarity': 0.92,
+            'properties': {'label': 'Person', 'confidence': 0.92}
+        },
+        {
+            'kernel_id': str(uuid.uuid4()),
+            'similarity': 0.88,
+            'properties': {'label': 'Car', 'confidence': 0.88}
+        },
+        {
+            'kernel_id': str(uuid.uuid4()),
+            'similarity': 0.75,
+            'properties': {'label': 'Building', 'confidence': 0.75}
+        }
+    ]
+    
     return JSONResponse(content={
         'status': 'success',
         'message': 'Object tracking (mock) - Lightweight server',
@@ -183,6 +202,7 @@ async def track_objects(request: dict):
         },
         'persistent_objects': persistent_objects,
         'tracked_objects': persistent_objects,
+        'current_detections': current_detections,
         'server_type': 'lightweight'
     })
 
