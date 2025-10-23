@@ -4,10 +4,18 @@
 
 [build.environment]
   NODE_VERSION = "18"
+  # Disable Python detection
+  PYTHON_VERSION = ""
+  # Force static site detection
+  NPM_FLAGS = "--version"
 
 # Disable Python detection
 [build.processing]
   skip_processing = false
+
+# Force static site build
+[build.processing.skip]
+  python = true
 
 [build.processing.css]
   bundle = false

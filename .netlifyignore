@@ -1,9 +1,12 @@
 # Ignore all backend and Python files
-requirements-backend.txt
+requirements*.txt
 backend-server/
 enhanced_server.py
 simple_ai_server.py
+lightweight_server.py
 start_server.py
+start.sh
+railway_start.py
 venv/
 __pycache__/
 *.pyc
@@ -40,3 +43,19 @@ README.md
 
 # Ignore the old frontend folder (we're using public now)
 frontend/
+
+# Ignore Railway and deployment files
+Procfile
+railway.json
+.railwayignore
+runtime.txt
+
+# Ignore checkpoints and model files
+checkpoints/
+*.pth
+*.pkl
+*.model
+
+# Ignore Python virtual environment
+venv/
+.venv/
