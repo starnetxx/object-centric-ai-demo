@@ -528,7 +528,7 @@ CORE gives it memory that lasts.
             <div class="input-group">
                 <label>Session ID (optional - for tracking)</label>
                 <input type="text" id="sessionId" placeholder="e.g., session_123">
-            </div>
+        </div>
             
             <button class="button" onclick="runPrediction()">🚀 Analyze Image</button>
             <button class="button secondary" onclick="clearPrediction()">Clear</button>
@@ -536,8 +536,8 @@ CORE gives it memory that lasts.
             <div class="loading" id="predictLoading">
                 <div class="spinner"></div>
                 <p>Analyzing image...</p>
-            </div>
-            
+    </div>
+
             <div class="results" id="predictResults"></div>
         </div>
 
@@ -679,9 +679,10 @@ CORE gives it memory that lasts.
         </div>
     </div>
 
+    <script src="config.js"></script>
     <script>
         // Configuration
-        const API_BASE = 'http://localhost:8000';
+        const API_BASE = window.API_CONFIG.apiUrl;
         let currentTab = 'predict';
         let uploadedImages = {
             predict: null,
